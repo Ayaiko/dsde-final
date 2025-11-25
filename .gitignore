@@ -5,3 +5,8 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 *.log
+PLAN.md
+
+# Unused modules (not in main pipeline)
+pipeline/aggregate.py
+scrapers/pm_scrape.py
