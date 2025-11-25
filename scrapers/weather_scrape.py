@@ -7,7 +7,8 @@ async def getInfo(latitude, longitude):
 
     # Get project root directory (parent of scrapers/)
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    download_path = os.path.join(project_root, 'data', 'raw')
+    download_path = os.path.join(project_root, 'data', 'weather_scraped')
+    os.makedirs(download_path, exist_ok=True)
 
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=False)
