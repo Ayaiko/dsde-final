@@ -10,3 +10,4 @@ PLAN.md
 # Unused modules (not in main pipeline)
 pipeline/aggregate.py
 scrapers/pm_scrape.py
+structure.md
