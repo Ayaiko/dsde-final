@@ -21,8 +21,18 @@ st.markdown("**Analyzing Bangkok citizen complaints with weather and temporal pa
 @st.cache_data
 def load_data():
     """Load the merged traffy dataset"""
-    df = pd.read_csv('../data/processed/traffy_merged_v1.csv')
+    df = pd.read_csv('../data/processed/traffy_weather_merged.csv')
     df.columns = df.columns.str.strip()  # Remove leading/trailing spaces
+    
+    # Convert weather columns to numeric
+    weather_cols = ['pm25', 'pm10', 'o3', 'no2', 'temperature_2m (°C)', 'dew_point_2m (°C)', 
+                    'relative_humidity_2m (%)', 'rain (mm)', 'vapour_pressure_deficit (kPa)',
+                    'cloud_cover (%)', 'wind_direction_10m (°)', 'surface_pressure (hPa)',
+                    'wind_speed_10m (km/h)']
+    for col in weather_cols:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors='coerce')
+    
     df['timestamp'] = pd.to_datetime(df['timestamp'], format='mixed', utc=True)
     df['hour'] = df['timestamp'].dt.hour
     df['day_of_week'] = df['timestamp'].dt.day_name()
@@ -43,6 +53,9 @@ def load_available_models():
 try:
     df = load_data()
     st.success(f"✅ Loaded {len(df):,} complaint records")
+    # Debug: Show column names (temporary)
+    with st.expander("📋 Debug: Column Names"):
+        st.write(df.columns.tolist())
 except Exception as e:
     st.error(f"❌ Error loading data: {e}")
     st.stop()
@@ -94,12 +107,12 @@ with tab1:
         st.metric("Districts", unique_districts)
     
     with col3:
-        avg_pm25 = df_filtered['pm25'].mean()
-        st.metric("Avg PM2.5", f"{avg_pm25:.1f}")
+        avg_temp = df_filtered['temperature_2m (°C)'].mean()
+        st.metric("Avg Temperature", f"{avg_temp:.1f}°C")
     
     with col4:
-        avg_pm10 = df_filtered['pm10'].mean()
-        st.metric("Avg PM10", f"{avg_pm10:.1f}")
+        avg_rain = df_filtered['rain (mm)'].sum()
+        st.metric("Total Rainfall", f"{avg_rain:.1f}mm")
     
     st.markdown("---")
     
@@ -108,14 +121,18 @@ with tab1:
     
     with col1:
         st.subheader("Top 15 Districts by Complaints")
-        district_counts = df_filtered['district'].value_counts().head(15)
+        district_counts = df_filtered['district'].value_counts().head(15).sort_values()
+        
+        # Use full data range for better contrast
+        all_counts = df_filtered['district'].value_counts()
         fig = px.bar(
             x=district_counts.values,
             y=district_counts.index,
             orientation='h',
             labels={'x': 'Number of Complaints', 'y': 'District'},
             color=district_counts.values,
-            color_continuous_scale='Greys'
+            color_continuous_scale='Greys',
+            range_color=[all_counts.min(), all_counts.max()]
         )
         fig.update_layout(showlegend=False, height=500)
         st.plotly_chart(fig, use_container_width=True)
@@ -187,16 +204,16 @@ with tab3:
     col1, col2 = st.columns(2)
     
     with col1:
-        st.subheader("Complaints vs O3")
+        st.subheader("Complaints vs Rainfall")
         
-        # Add complaint count by O3 bins
-        o3_bins = pd.cut(df_filtered['o3'].dropna(), bins=20)
-        o3_counts = df_filtered.dropna(subset=['o3']).groupby(o3_bins).size()
+        # Add complaint count by rain bins
+        rain_bins = pd.cut(df_filtered['rain (mm)'].dropna(), bins=20)
+        rain_counts = df_filtered.dropna(subset=['rain (mm)']).groupby(rain_bins).size()
         fig = px.line(
-            x=[interval.mid for interval in o3_counts.index],
-            y=o3_counts.values,
-            labels={'x': 'O3 Level', 'y': 'Number of Complaints'},
-            color_discrete_sequence=['#2ca02c']
+            x=[interval.mid for interval in rain_counts.index],
+            y=rain_counts.values,
+            labels={'x': 'Rainfall (mm)', 'y': 'Number of Complaints'},
+            color_discrete_sequence=['#1f77b4']
         )
         st.plotly_chart(fig, use_container_width=True)
     
@@ -212,25 +229,26 @@ with tab3:
         )
         st.plotly_chart(fig, use_container_width=True)
     
-    # Weather summary stats
-    st.subheader("Air Quality Statistics")
+    # Weather & Air Quality summary stats
+    st.subheader("Weather & Air Quality Statistics")
+    
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
-        st.metric("Avg PM2.5", f"{df_filtered['pm25'].mean():.1f}")
-        st.metric("Max PM2.5", f"{df_filtered['pm25'].max():.1f}")
+        st.metric("Avg Temperature", f"{df_filtered['temperature_2m (°C)'].mean():.1f}°C")
+        st.metric("Max Temperature", f"{df_filtered['temperature_2m (°C)'].max():.1f}°C")
     
     with col2:
-        st.metric("Avg PM10", f"{df_filtered['pm10'].mean():.1f}")
-        st.metric("Max PM10", f"{df_filtered['pm10'].max():.1f}")
+        st.metric("Avg Humidity", f"{df_filtered['relative_humidity_2m (%)'].mean():.1f}%")
+        st.metric("Max Humidity", f"{df_filtered['relative_humidity_2m (%)'].max():.1f}%")
     
     with col3:
-        st.metric("Avg O3", f"{df_filtered['o3'].mean():.1f}")
-        st.metric("Max O3", f"{df_filtered['o3'].max():.1f}")
+        st.metric("Total Rainfall", f"{df_filtered['rain (mm)'].sum():.1f}mm")
+        st.metric("Avg Wind Speed", f"{df_filtered['wind_speed_10m (km/h)'].mean():.1f} km/h")
     
     with col4:
-        st.metric("Avg NO2", f"{df_filtered['no2'].mean():.1f}")
-        st.metric("Max NO2", f"{df_filtered['no2'].max():.1f}")
+        st.metric("Avg PM2.5", f"{df_filtered['pm25'].mean():.1f}")
+        st.metric("Avg PM10", f"{df_filtered['pm10'].mean():.1f}")
 
 # Tab 4: ML Models
 with tab4:
@@ -254,7 +272,8 @@ with tab4:
             st.markdown("""
             **Features used:**
             - ⏰ Temporal: Hour, day of week, month (cyclical encoding)
-            - 🌤️ Air Quality: PM2.5, PM10, O3, NO2
+            - 🌤️ Weather: Temperature, humidity, rainfall, wind speed, cloud cover
+            - 💨 Air Quality: PM2.5, PM10, O3, NO2
             - 📍 Location: District (one-hot encoded)
             
             **Model details:**
