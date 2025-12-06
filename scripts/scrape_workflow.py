@@ -13,7 +13,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from pipeline.utils import get_grid_coordinates
-from scrapers.weather_scrape import scrape_multiple_locations
+from scrapers.weather_scrape_old import scrape_multiple_locations
 
 
 async def main():
