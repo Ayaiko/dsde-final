@@ -1,4 +1,4 @@
-from pipeline.extract import load_traffy_data, load_all_weather_data
+from pipeline.extract import load_traffy_data, load_all_weather_data, load_single_location_weather
 from pipeline.transform import parse_timestamps, assign_grid_cells, merge_datasets
 from pipeline.utils import split_coordinates, clean_traffy_data
 from pipeline.load import save_merged_data
@@ -10,9 +10,16 @@ from pipeline.features import prepare_features
 from pipeline.train import train_all_types
 import pandas as pd
 import argparse
+import asyncio
+import sys
+import os
+
+sys.path.append(os.path.join(os.path.dirname(__file__), 'scrapers'))
+from weather_scrape import download_api_weather_bangkok
+from pm_scrape import download_aqi_bangkok
 
 
-def main(skip_etl=False, skip_training=False, sample_size=None, train_n_iter=5, train_min_samples=50):
+def main(skip_etl=False, skip_training=False, skip_scraping=True, sample_size=None, train_n_iter=5, train_min_samples=50):
     """
     Complete ML pipeline from data extraction to model training.
     
@@ -22,6 +29,8 @@ def main(skip_etl=False, skip_training=False, sample_size=None, train_n_iter=5, 
         If True, loads existing traffy_weather_merged.csv instead of running ETL
     skip_training : bool
         If True, skips model training phase
+    skip_scraping : bool
+        If True, skips weather and PM2.5/AQI data scraping (default: True)
     sample_size : int, optional
         Number of records to sample for faster training (e.g., 200000)
     train_n_iter : int
@@ -29,6 +38,19 @@ def main(skip_etl=False, skip_training=False, sample_size=None, train_n_iter=5, 
     train_min_samples : int
         Minimum positive samples required to train a type (default: 50)
     """
+    
+    if not skip_scraping:
+        print("\n" + "="*80)
+        print("WEATHER SCRAPING PHASE")
+        print("="*80)
+        asyncio.run(download_api_weather_bangkok("13.74", "100.50"))
+        print(f"✓ Weather data scraped for coordinates: 13.74N, 100.50E")
+        
+        print("\n" + "="*80)
+        print("PM2.5/AQI SCRAPING PHASE")
+        print("="*80)
+        download_aqi_bangkok()
+        print(f"✓ PM2.5/AQI data scraped for Bangkok")
     
     if skip_etl:
         print("\n" + "="*80)
@@ -38,19 +60,30 @@ def main(skip_etl=False, skip_training=False, sample_size=None, train_n_iter=5, 
         print(f"✓ Loaded: {len(df_merged):,} records from traffy_weather_merged.csv")
     else:
         print("\n" + "="*80)
-        print("ETL PHASE")
+        print("ETL PHASE (Single Location + Daily Aggregation)")
         print("="*80)
         # ETL
         df_traffy = load_traffy_data()
         df_traffy = clean_traffy_data(df_traffy)
         df_traffy = split_coordinates(df_traffy)
         
-        df_weather = load_all_weather_data()
+        # Load single location weather
+        df_weather = load_single_location_weather('data/raw/open-meteo-13.74N100.50E9m.csv')
         
-        df_traffy, df_weather = parse_timestamps(df_traffy, df_weather)
-        df_traffy, df_weather = assign_grid_cells(df_traffy, df_weather, delta=0.1)
+        # Parse timestamps to date only
+        df_traffy['timestamp'] = pd.to_datetime(df_traffy['timestamp'], format='mixed', utc=True)
+        df_traffy['date'] = df_traffy['timestamp'].dt.date
+        df_traffy['date'] = pd.to_datetime(df_traffy['date'])
         
-        df_merged = merge_datasets(df_traffy, df_weather)
+        df_weather['date'] = pd.to_datetime(df_weather['time']).dt.date
+        df_weather['date'] = pd.to_datetime(df_weather['date'])
+        
+        # Aggregate weather to daily average
+        df_weather_daily = df_weather.groupby('date').mean(numeric_only=True).reset_index()
+        
+        # Merge on date only (100% match rate)
+        df_merged = df_traffy.merge(df_weather_daily, on='date', how='left')
+        
         save_merged_data(df_merged)
     
     print("\n" + "="*80)
@@ -140,12 +173,32 @@ def main(skip_etl=False, skip_training=False, sample_size=None, train_n_iter=5, 
     print("="*80)
 
 
+def run_visualization():
+    """
+    Launch Streamlit visualization dashboard.
+    """
+    import subprocess
+    
+    print("\n" + "="*80)
+    print("LAUNCHING VISUALIZATION DASHBOARD")
+    print("="*80)
+    print("Starting Streamlit dashboard...")
+    print("Dashboard will open in your browser at http://localhost:8501")
+    print("\nPress Ctrl+C in the terminal to stop the server\n")
+    
+    subprocess.run(['streamlit', 'run', 'visualization/visualization.py'])
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Bangkok Traffy Complaint ML Pipeline')
+    parser.add_argument('--scrape-weather', action='store_true',
+                        help='Scrape weather and PM2.5/AQI data')
     parser.add_argument('--skip-etl', action='store_true', 
                         help='Skip ETL phase, load existing traffy_weather_merged.csv')
     parser.add_argument('--skip-training', action='store_true',
                         help='Skip model training phase')
+    parser.add_argument('--visualize', action='store_true',
+                        help='Launch Streamlit visualization dashboard after pipeline')
     parser.add_argument('--sample', type=int, default=None,
                         help='Sample size for faster training (e.g., 200000)')
     parser.add_argument('--n-iter', type=int, default=5,
@@ -156,9 +209,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     main(
+        skip_scraping=not args.scrape_weather,
         skip_etl=args.skip_etl,
         skip_training=args.skip_training,
         sample_size=args.sample,
         train_n_iter=args.n_iter,
         train_min_samples=args.min_samples
     )
+    
+    if args.visualize:
+        run_visualization()

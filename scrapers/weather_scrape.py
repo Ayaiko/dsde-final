@@ -72,5 +72,3 @@ async def download_api_weather_bangkok(latitude,longitude):
 
         print("Cleaned CSV (removed first 3 lines).")
 
-
-asyncio.run(download_api_weather_bangkok("13.75","100.5"))

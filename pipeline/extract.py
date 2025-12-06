@@ -52,6 +52,24 @@ def load_weather_data(filepath='data/raw/open-meteo-13.74N100.50E7m.csv'):
     return df
 
 
+def load_single_location_weather(filepath='data/raw/open-meteo-13.74N100.50E9m.csv'):
+    """
+    Load weather data from a single location for daily aggregation.
+    
+    Parameters:
+    -----------
+    filepath : str
+        Path to the single location weather CSV file
+    
+    Returns:
+    --------
+    pandas.DataFrame
+        Weather data with hourly records
+    """
+    df = pd.read_csv(filepath)
+    return df
+
+
 def load_all_weather_data(weather_dir='data/weather_scraped'):
     import glob
     

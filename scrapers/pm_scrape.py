@@ -130,4 +130,4 @@ def download_aqi_bangkok():
         browser.close()
 
 
-download_aqi_bangkok()
+#download_aqi_bangkok()

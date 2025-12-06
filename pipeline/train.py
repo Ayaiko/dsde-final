@@ -346,8 +346,8 @@ def prepare_features_for_training(df):
     """
     # Identify columns to exclude
     exclude_cols = (
-        df.select_dtypes(include=['object']).columns.tolist() +
-        ['timestamp', 'timestamp_col'] +
+        df.select_dtypes(include=['object', 'datetime', 'datetime64']).columns.tolist() +
+        ['timestamp', 'timestamp_col', 'timestamp_hour', 'date', 'time'] +
         [c for c in df.columns if c.startswith('type_')]
     )
     
