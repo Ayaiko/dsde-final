@@ -215,13 +215,12 @@ try:
         get_position='[longitude, latitude]',
         aggregation='mean',
         get_weight=1,  # 1row 1น้ำหนัก
-        opacity=0.6
+        opacity=0.4
 
     )
 
     st.pydeck_chart(
     pdk.Deck(
-        map_provider='mapbox',
         layers=[heatmap_layer],
         initial_view_state=pdk.ViewState(
             latitude=data['latitude'].mean(),

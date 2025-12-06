@@ -18,7 +18,7 @@ from scrapers.weather_scrape import scrape_multiple_locations
 
 async def main():
     # Load data
-    df = pd.read_csv('data/raw/bangkok_traffy.csv')
+    # df = pd.read_csv('data/raw/bangkok_traffy.csv')
     print(f"Loaded {len(df):,} records")
     
     # Extract coordinates
