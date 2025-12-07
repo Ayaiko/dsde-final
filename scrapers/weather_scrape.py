@@ -46,7 +46,7 @@ async def download_api_weather_bangkok(latitude,longitude):
         download = await dl_info.value
 
         # เอาชื่อไฟล์ที่เว็บตั้งมาให้
-        filename = download.suggested_filename
+        filename = "open-meteo-13.74N100.50.csv"
         save_path = os.path.join(download_path, filename)
 
         await download.save_as(save_path)

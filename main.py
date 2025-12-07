@@ -68,7 +68,7 @@ def main(skip_etl=False, skip_training=False, skip_scraping=True, sample_size=No
         df_traffy = split_coordinates(df_traffy)
         
         # Load single location weather
-        df_weather = load_single_location_weather('data/raw/open-meteo-13.74N100.50E9m.csv')
+        df_weather = load_single_location_weather('data/raw/open-meteo-13.74N100.50.csv')
         
         # Parse timestamps to date only
         df_traffy['timestamp'] = pd.to_datetime(df_traffy['timestamp'], format='mixed', utc=True)
