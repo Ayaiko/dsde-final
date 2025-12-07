@@ -1,0 +1,226 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Visualization Pipeline" id="viz-pipeline">
+    <mxGraphModel dx="1434" dy="790" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        
+        <!-- Title -->
+        <mxCell id="title" value="Visualization &amp; Dashboard Pipeline" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=20;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="400" y="20" width="600" height="40" as="geometry"/>
+        </mxCell>
+        
+        <!-- DATA INPUT SECTION -->
+        <mxCell id="dataInputGroup" value="DATA SOURCES" style="swimlane;fillColor=#E3F2FD;strokeColor=#1976D2;strokeWidth=3;fontSize=14;fontStyle=1;startSize=35" vertex="1" parent="1">
+          <mxGeometry x="80" y="80" width="320" height="280" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="trainedModels" value="Trained Models&#xa;&#xa;26 pickle files&#xa;models/{type}_model.pkl" style="shape=cylinder3;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#1976D2;strokeWidth=2;fontSize=11;fontStyle=1;size=15" vertex="1" parent="dataInputGroup">
+          <mxGeometry x="40" y="50" width="120" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="finalDataset" value="Final Dataset&#xa;&#xa;traffy_weather_final.csv&#xa;70 features + targets" style="shape=document;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#1976D2;strokeWidth=2;fontSize=11;fontStyle=1;size=0.2" vertex="1" parent="dataInputGroup">
+          <mxGeometry x="180" y="50" width="120" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="featureNames" value="Feature Names&#xa;&#xa;feature_names.pkl&#xa;Column labels" style="shape=note;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#1976D2;strokeWidth=2;fontSize=11;fontStyle=1;size=15" vertex="1" parent="dataInputGroup">
+          <mxGeometry x="40" y="160" width="120" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="trainingSummary" value="Training Summary&#xa;&#xa;training_summary.csv&#xa;Metrics per model" style="shape=parallelogram;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#1976D2;strokeWidth=2;fontSize=11;fontStyle=1;perimeter=parallelogramPerimeter" vertex="1" parent="dataInputGroup">
+          <mxGeometry x="180" y="160" width="120" height="90" as="geometry"/>
+        </mxCell>
+        
+        <!-- STREAMLIT APP SECTION -->
+        <mxCell id="streamlitGroup" value="STREAMLIT APPLICATION" style="swimlane;fillColor=#E8F5E9;strokeColor=#2E7D32;strokeWidth=3;fontSize=14;fontStyle=1;startSize=35" vertex="1" parent="1">
+          <mxGeometry x="460" y="80" width="480" height="280" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="loadData" value="Load Data Function&#xa;&#xa;• Load CSV&#xa;• Parse types&#xa;• Filter valid entries" style="rounded=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#2E7D32;strokeWidth=2;fontSize=11;whiteSpace=wrap;" vertex="1" parent="streamlitGroup">
+          <mxGeometry x="30" y="50" width="140" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="loadModels" value="Load Models&#xa;&#xa;• Unpickle models&#xa;• Load feature names&#xa;• Load summary" style="rounded=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#2E7D32;strokeWidth=2;fontSize=11;whiteSpace=wrap;" vertex="1" parent="streamlitGroup">
+          <mxGeometry x="30" y="160" width="140" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="sidebar" value="Sidebar Controls&#xa;&#xa;• Page selection&#xa;• Type filters&#xa;• District filters&#xa;• Date range" style="rounded=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#2E7D32;strokeWidth=2;fontSize=11;whiteSpace=wrap;" vertex="1" parent="streamlitGroup">
+          <mxGeometry x="200" y="50" width="140" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="pageRouter" value="Page Router&#xa;&#xa;• Overview&#xa;• Maps&#xa;• Feature Importance" style="rhombus;whiteSpace=wrap;fillColor=#FFF9C4;strokeColor=#F57F17;strokeWidth=2;fontSize=11;" vertex="1" parent="streamlitGroup">
+          <mxGeometry x="195" y="160" width="150" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="caching" value="@st.cache_data&#xa;Performance" style="rounded=1;whiteSpace=wrap;fillColor=#FFE0B2;strokeColor=#E65100;strokeWidth=2;fontSize=10;fontStyle=2" vertex="1" parent="streamlitGroup">
+          <mxGeometry x="370" y="105" width="90" height="50" as="geometry"/>
+        </mxCell>
+        
+        <!-- PAGE 1: OVERVIEW -->
+        <mxCell id="overviewGroup" value="PAGE 1: OVERVIEW" style="swimlane;fillColor=#FFF3E0;strokeColor=#E65100;strokeWidth=3;fontSize=14;fontStyle=1;startSize=35" vertex="1" parent="1">
+          <mxGeometry x="80" y="400" width="320" height="320" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="metrics" value="Key Metrics&#xa;&#xa;• Total complaints&#xa;• Unique types&#xa;• Date range&#xa;• Models trained" style="rounded=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#E65100;strokeWidth=2;fontSize=11;whiteSpace=wrap;" vertex="1" parent="overviewGroup">
+          <mxGeometry x="30" y="50" width="120" height="100" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="distribution" value="Type Distribution&#xa;&#xa;Bar chart&#xa;Count per type" style="rounded=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#E65100;strokeWidth=2;fontSize=11;whiteSpace=wrap;" vertex="1" parent="overviewGroup">
+          <mxGeometry x="170" y="50" width="120" height="100" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="temporal" value="Temporal Trends&#xa;&#xa;Line chart&#xa;Complaints over time" style="rounded=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#E65100;strokeWidth=2;fontSize=11;whiteSpace=wrap;" vertex="1" parent="overviewGroup">
+          <mxGeometry x="30" y="170" width="120" height="100" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="performance" value="Model Performance&#xa;&#xa;Table&#xa;Accuracy, F1 per type" style="rounded=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#E65100;strokeWidth=2;fontSize=11;whiteSpace=wrap;" vertex="1" parent="overviewGroup">
+          <mxGeometry x="170" y="170" width="120" height="100" as="geometry"/>
+        </mxCell>
+        
+        <!-- PAGE 2: MAPS -->
+        <mxCell id="mapGroup" value="PAGE 2: INTERACTIVE MAPS" style="swimlane;fillColor=#F3E5F5;strokeColor=#7B1FA2;strokeWidth=3;fontSize=14;fontStyle=1;startSize=35" vertex="1" parent="1">
+          <mxGeometry x="440" y="400" width="500" height="320" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="filterMap" value="Filter Data&#xa;&#xa;• By type&#xa;• By date&#xa;• By district" style="rounded=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#7B1FA2;strokeWidth=2;fontSize=11;whiteSpace=wrap;" vertex="1" parent="mapGroup">
+          <mxGeometry x="30" y="50" width="120" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="pydeckMap" value="Pydeck Map&#xa;&#xa;• Scatter layer&#xa;• Color by type&#xa;• Size by count&#xa;• Tooltips" style="rounded=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#7B1FA2;strokeWidth=2;fontSize=11;whiteSpace=wrap;" vertex="1" parent="mapGroup">
+          <mxGeometry x="180" y="50" width="140" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="heatmap" value="Heatmap Layer&#xa;&#xa;• Density overlay&#xa;• Hotspot detection&#xa;• Intensity scale" style="rounded=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#7B1FA2;strokeWidth=2;fontSize=11;whiteSpace=wrap;" vertex="1" parent="mapGroup">
+          <mxGeometry x="350" y="50" width="120" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="districtStats" value="District Statistics&#xa;&#xa;• Complaints per district&#xa;• Top types&#xa;• Bar chart" style="rounded=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#7B1FA2;strokeWidth=2;fontSize=11;whiteSpace=wrap;" vertex="1" parent="mapGroup">
+          <mxGeometry x="30" y="170" width="140" height="100" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="coordinates" value="Coordinate Display&#xa;&#xa;• Lat/Lon info&#xa;• Zoom level&#xa;• Selection details" style="rounded=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#7B1FA2;strokeWidth=2;fontSize=11;whiteSpace=wrap;" vertex="1" parent="mapGroup">
+          <mxGeometry x="200" y="170" width="140" height="100" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="export" value="Export Options&#xa;&#xa;• Download filtered&#xa;• Save view" style="rounded=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#7B1FA2;strokeWidth=2;fontSize=11;whiteSpace=wrap;" vertex="1" parent="mapGroup">
+          <mxGeometry x="370" y="170" width="100" height="100" as="geometry"/>
+        </mxCell>
+        
+        <!-- PAGE 3: FEATURE IMPORTANCE -->
+        <mxCell id="featureGroup" value="PAGE 3: FEATURE IMPORTANCE" style="swimlane;fillColor=#E1F5FE;strokeColor=#01579B;strokeWidth=3;fontSize=14;fontStyle=1;startSize=35" vertex="1" parent="1">
+          <mxGeometry x="1000" y="80" width="320" height="640" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="selectModel" value="Model Selection&#xa;&#xa;Dropdown menu&#xa;Choose complaint type" style="rounded=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#01579B;strokeWidth=2;fontSize=11;whiteSpace=wrap;" vertex="1" parent="featureGroup">
+          <mxGeometry x="30" y="50" width="120" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="modelInfo" value="Model Info&#xa;&#xa;• Samples&#xa;• Accuracy&#xa;• F1 Score" style="rounded=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#01579B;strokeWidth=2;fontSize=11;whiteSpace=wrap;" vertex="1" parent="featureGroup">
+          <mxGeometry x="170" y="50" width="120" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="filterFeatures" value="Feature Filters&#xa;&#xa;☐ Hide sin/cos&#xa;☐ Hide districts&#xa;☐ Top N only" style="rounded=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#01579B;strokeWidth=2;fontSize=11;align=left;spacingLeft=10;whiteSpace=wrap;" vertex="1" parent="featureGroup">
+          <mxGeometry x="30" y="160" width="120" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="categorize" value="Categorize&#xa;&#xa;• Temporal&#xa;• Air Quality&#xa;• Weather&#xa;• Location" style="rounded=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#01579B;strokeWidth=2;fontSize=11;whiteSpace=wrap;" vertex="1" parent="featureGroup">
+          <mxGeometry x="170" y="160" width="120" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="barChart" value="Feature Importance&#xa;Bar Chart&#xa;&#xa;Color by category&#xa;Sorted by importance" style="rounded=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#01579B;strokeWidth=2;fontSize=11;whiteSpace=wrap;" vertex="1" parent="featureGroup">
+          <mxGeometry x="30" y="270" width="260" height="100" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="categoryAgg" value="Category Summary&#xa;&#xa;Aggregate importance&#xa;by category&#xa;Pie chart" style="rounded=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#01579B;strokeWidth=2;fontSize=11;whiteSpace=wrap;" vertex="1" parent="featureGroup">
+          <mxGeometry x="30" y="390" width="120" height="100" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="topFeatures" value="Top Features Table&#xa;&#xa;Rank | Feature | Score&#xa;Interactive sort" style="rounded=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#01579B;strokeWidth=2;fontSize=11;whiteSpace=wrap;" vertex="1" parent="featureGroup">
+          <mxGeometry x="170" y="390" width="120" height="100" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="interpretation" value="Interpretation Guide&#xa;&#xa;What do these&#xa;features mean?" style="rounded=1;whiteSpace=wrap;fillColor=#FFF9C4;strokeColor=#F57F17;strokeWidth=2;fontSize=11;whiteSpace=wrap;" vertex="1" parent="featureGroup">
+          <mxGeometry x="30" y="510" width="260" height="80" as="geometry"/>
+        </mxCell>
+        
+        <!-- CONNECTIONS -->
+        <mxCell id="edge1" edge="1" parent="1" source="trainedModels" target="loadModels">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="edge2" edge="1" parent="1" source="finalDataset" target="loadData">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="edge3" edge="1" parent="1" source="featureNames" target="loadModels">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="edge4" edge="1" parent="1" source="trainingSummary" target="loadModels">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="edge5" edge="1" parent="1" source="loadData" target="sidebar">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="edge6" edge="1" parent="1" source="sidebar" target="pageRouter">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="edge7" value="Overview" edge="1" parent="1" source="pageRouter" target="metrics">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="380"/>
+              <mxPoint x="170" y="380"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="edge8" value="Maps" edge="1" parent="1" source="pageRouter" target="filterMap">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="730" y="380"/>
+              <mxPoint x="530" y="380"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="edge9" value="Feature&#xa;Importance" edge="1" parent="1" source="pageRouter" target="selectModel">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="790" y="280"/>
+              <mxPoint x="1090" y="175"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="edge10" edge="1" parent="1" source="loadModels" target="selectModel">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="560" y="290"/>
+              <mxPoint x="1000" y="290"/>
+              <mxPoint x="1090" y="175"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- TECH STACK BOX -->
+        <mxCell id="techBox" value="TECHNOLOGY STACK&#xa;&#xa;Frontend: Streamlit&#xa;Maps: Pydeck (Mapbox GL)&#xa;Charts: Plotly Express&#xa;Data: Pandas&#xa;Models: Scikit-learn (pickle)" style="rounded=0;whiteSpace=wrap;fillColor=#F5F5F5;strokeColor=#757575;strokeWidth=2;fontSize=11;align=left;spacingLeft=15;fontStyle=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="80" y="750" width="280" height="140" as="geometry"/>
+        </mxCell>
+        
+        <!-- FEATURES BOX -->
+        <mxCell id="featuresBox" value="KEY FEATURES&#xa;&#xa;✓ Real-time filtering&#xa;✓ Interactive maps&#xa;✓ Interpretable insights&#xa;✓ Export capabilities&#xa;✓ Performance caching&#xa;✓ Responsive design" style="rounded=0;whiteSpace=wrap;fillColor=#E8F5E9;strokeColor=#2E7D32;strokeWidth=2;fontSize=11;align=left;spacingLeft=15;fontStyle=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="400" y="750" width="280" height="140" as="geometry"/>
+        </mxCell>
+        
+        <!-- USER INTERACTION BOX -->
+        <mxCell id="interactionBox" value="USER INTERACTIONS&#xa;&#xa;→ Filter by type/date/location&#xa;→ Click map points for details&#xa;→ Toggle feature visibility&#xa;→ Compare model performance&#xa;→ Download filtered data&#xa;→ Zoom/pan map exploration" style="rounded=0;whiteSpace=wrap;fillColor=#FFF8E1;strokeColor=#FF6F00;strokeWidth=2;fontSize=11;align=left;spacingLeft=15;fontStyle=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="720" y="750" width="280" height="140" as="geometry"/>
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

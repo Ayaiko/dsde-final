@@ -97,6 +97,33 @@ def load_all_weather_data(weather_dir='data/weather_scraped'):
     return df_all
 
 
+def load_bangkok_air_quality(filepath='data/processed/bangkok-air-quality.csv'):
+    """
+    Load Bangkok Air Quality data (PM2.5, PM10, O3, NO2)
+    
+    Parameters:
+    -----------
+    filepath : str
+        Path to the Bangkok Air Quality CSV file
+    
+    Returns:
+    --------
+    pandas.DataFrame
+        Air quality data with date column
+    """
+    df = pd.read_csv(filepath)
+    
+    # Drop SO2 and CO columns if they exist
+    columns_to_drop = [col for col in df.columns if col.strip().lower() in ['so2', 'co']]
+    if columns_to_drop:
+        df = df.drop(columns=columns_to_drop)
+    
+    # Parse date column
+    df['date'] = pd.to_datetime(df['date']).dt.normalize()
+    
+    return df
+
+
 def extract():
     """
     Main extract function - Load all required data

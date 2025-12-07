@@ -1,0 +1,306 @@
+<mxfile>
+  <diagram name="Bangkok Traffy ML Pipeline" id="pipeline1">
+    <mxGraphModel>
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        
+        <!-- Start -->
+        <mxCell id="start" value="Start Pipeline" style="ellipse;fillColor=#FFFFFF;strokeColor=#000000;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="200" width="140" height="80" as="geometry"/>
+        </mxCell>
+        
+        <!-- Scraping Decision -->
+        <mxCell id="scraping" value="Scrape New Data?" style="rhombus;fillColor=#FFF9C4;strokeColor=#F57F17;strokeWidth=3;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="240" y="190" width="160" height="100" as="geometry"/>
+        </mxCell>
+        
+        <!-- SCRAPING PHASE GROUP -->
+        <mxCell id="scrapingGroup" value="SCRAPING PHASE" style="swimlane;fillColor=#FFE5B4;strokeColor=#FF8C00;strokeWidth=3;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="480" y="40" width="280" height="360" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="weather" value="Scrape Weather Data&#xa;&#xa;Open-Meteo API&#xa;Hourly measurements" style="rectangle;fillColor=#FFFFFF;strokeColor=#FF8C00;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="scrapingGroup">
+          <mxGeometry x="40" y="50" width="200" height="100" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="air" value="Scrape Air Quality&#xa;&#xa;PM2.5, PM10, O3, NO2&#xa;Daily measurements" style="rectangle;fillColor=#FFFFFF;strokeColor=#FF8C00;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="scrapingGroup">
+          <mxGeometry x="40" y="180" width="200" height="100" as="geometry"/>
+        </mxCell>
+        
+        <!-- DATA LOADING PHASE GROUP -->
+        <mxCell id="loadingGroup" value="DATA LOADING PHASE" style="swimlane;fillColor=#E0F2F7;strokeColor=#0288D1;strokeWidth=3;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="820" y="40" width="280" height="360" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="traffy" value="Load bangkok_traffy.csv&#xa;&#xa;~700K complaints&#xa;Raw citizen reports" style="rectangle;fillColor=#FFFFFF;strokeColor=#0288D1;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="loadingGroup">
+          <mxGeometry x="40" y="50" width="200" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="weatherraw" value="Load weather CSVs&#xa;&#xa;Hourly measurements&#xa;Temperature, rain, etc" style="rectangle;fillColor=#FFFFFF;strokeColor=#0288D1;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="loadingGroup">
+          <mxGeometry x="40" y="160" width="200" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="airraw" value="Load air quality CSV&#xa;&#xa;Daily air quality&#xa;PM2.5, PM10, O3, NO2" style="rectangle;fillColor=#FFFFFF;strokeColor=#0288D1;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="loadingGroup">
+          <mxGeometry x="40" y="270" width="200" height="90" as="geometry"/>
+        </mxCell>
+        
+        <!-- DATA CLEANING PHASE GROUP -->
+        <mxCell id="cleaningGroup" value="DATA CLEANING PHASE" style="swimlane;fillColor=#F0F4C3;strokeColor=#9E9D24;strokeWidth=3;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="1160" y="40" width="280" height="360" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="cleantraffy" value="Clean Traffy Data&#xa;&#xa;Drop nulls&#xa;Filter Bangkok&#xa;Parse timestamps" style="rectangle;fillColor=#FFFFFF;strokeColor=#9E9D24;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="cleaningGroup">
+          <mxGeometry x="40" y="50" width="200" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="aggweather" value="Aggregate Weather&#xa;&#xa;Hourly → Daily avg&#xa;Group by date" style="rectangle;fillColor=#FFFFFF;strokeColor=#9E9D24;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="cleaningGroup">
+          <mxGeometry x="40" y="160" width="200" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="cleanair" value="Clean Air Quality&#xa;&#xa;Drop SO2/CO columns&#xa;Parse dates" style="rectangle;fillColor=#FFFFFF;strokeColor=#9E9D24;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="cleaningGroup">
+          <mxGeometry x="40" y="270" width="200" height="90" as="geometry"/>
+        </mxCell>
+        
+        <!-- DATA MERGING PHASE GROUP -->
+        <mxCell id="mergingGroup" value="DATA MERGING PHASE" style="swimlane;fillColor=#E1BEE7;strokeColor=#7B1FA2;strokeWidth=3;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="1500" y="40" width="280" height="360" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="extractdate" value="Extract Date&#xa;&#xa;YYYY-MM-DD format&#xa;Normalize timestamps" style="rectangle;fillColor=#FFFFFF;strokeColor=#7B1FA2;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="mergingGroup">
+          <mxGeometry x="40" y="50" width="200" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="merge1" value="Merge on Date&#xa;&#xa;Traffy + Weather&#xa;Left join (keep all complaints)" style="rectangle;fillColor=#FFFFFF;strokeColor=#7B1FA2;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="mergingGroup">
+          <mxGeometry x="40" y="160" width="200" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="merge2" value="Merge on Date&#xa;&#xa;+ Air Quality data&#xa;Left join" style="rectangle;fillColor=#FFFFFF;strokeColor=#7B1FA2;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="mergingGroup">
+          <mxGeometry x="40" y="270" width="200" height="90" as="geometry"/>
+        </mxCell>
+        
+        <!-- PREPROCESSING PHASE GROUP -->
+        <mxCell id="preprocessingGroup" value="PREPROCESSING PHASE" style="swimlane;fillColor=#FFF3E0;strokeColor=#E65100;strokeWidth=3;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="1840" y="40" width="280" height="360" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="parsetypes" value="Parse Complaint Types&#xa;&#xa;Split comma-separated&#xa;Create type lists" style="rectangle;fillColor=#FFFFFF;strokeColor=#E65100;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="preprocessingGroup">
+          <mxGeometry x="40" y="50" width="200" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="filterempty" value="Filter Empty Types&#xa;&#xa;Remove blank entries&#xa;Keep valid complaints" style="rectangle;fillColor=#FFFFFF;strokeColor=#E65100;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="preprocessingGroup">
+          <mxGeometry x="40" y="160" width="200" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="dropnulls" value="Drop Missing Data&#xa;&#xa;Remove rows with null air quality&#xa;Weather or location data" style="rectangle;fillColor=#FFFFFF;strokeColor=#E65100;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="preprocessingGroup">
+          <mxGeometry x="40" y="270" width="200" height="90" as="geometry"/>
+        </mxCell>
+        
+        <!-- FEATURE ENGINEERING PHASE GROUP -->
+        <mxCell id="featureGroup" value="FEATURE ENGINEERING PHASE" style="swimlane;fillColor=#C8E6C9;strokeColor=#388E3C;strokeWidth=3;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="2180" y="40" width="600" height="360" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="extracttime" value="Extract Time Features&#xa;&#xa;hour, day_of_week, month&#xa;From timestamp" style="rectangle;fillColor=#FFFFFF;strokeColor=#388E3C;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="featureGroup">
+          <mxGeometry x="40" y="50" width="200" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="cyclical" value="Cyclical Encoding&#xa;&#xa;sin/cos transformations&#xa;For periodic features" style="rectangle;fillColor=#FFFFFF;strokeColor=#388E3C;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="featureGroup">
+          <mxGeometry x="40" y="160" width="200" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="location" value="Location Features&#xa;&#xa;latitude, longitude&#xa;district one-hot" style="rectangle;fillColor=#FFFFFF;strokeColor=#388E3C;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="featureGroup">
+          <mxGeometry x="270" y="50" width="200" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="createtargets" value="Create Binary Targets&#xa;&#xa;One column per type&#xa;Multi-label encoding" style="rectangle;fillColor=#FFFFFF;strokeColor=#388E3C;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="featureGroup">
+          <mxGeometry x="270" y="160" width="200" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="savefinal" value="Save Final Dataset&#xa;&#xa;traffy_weather_final.csv&#xa;Ready for training" style="rectangle;fillColor=#FFFFFF;strokeColor=#388E3C;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="featureGroup">
+          <mxGeometry x="40" y="270" width="200" height="90" as="geometry"/>
+        </mxCell>
+        
+        <!-- Training Decision -->
+        <mxCell id="traindecision" value="Train Models?" style="rhombus;fillColor=#FFF9C4;strokeColor=#F57F17;" vertex="1" parent="1">
+          <mxGeometry x="2360" y="145" width="140" height="80" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="end" value="Pipeline Complete" style="ellipse;fillColor=#FFFFFF;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="2370" y="260" width="120" height="60" as="geometry"/>
+        </mxCell>
+        
+        <!-- MODEL TRAINING PHASE GROUP -->
+        <mxCell id="trainingGroup" value="MODEL TRAINING PHASE" style="swimlane;fillColor=#FFCDD2;strokeColor=#C62828;strokeWidth=3;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="2840" y="40" width="1280" height="380" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="trainloop" value="Train Models Loop&#xa;&#xa;For each complaint type&#xa;Binary classification" style="rectangle;fillColor=#FFFFFF;strokeColor=#C62828;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="trainingGroup">
+          <mxGeometry x="40" y="50" width="200" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="checksamples" value="Enough Samples?&#xa;min 50 positive" style="rhombus;fillColor=#FFF9C4;strokeColor=#F57F17;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="trainingGroup">
+          <mxGeometry x="270" y="40" width="160" height="110" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="skiptype" value="Skip This Type&#xa;&#xa;Insufficient data" style="rectangle;fillColor=#FFFFFF;strokeColor=#C62828;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="trainingGroup">
+          <mxGeometry x="270" y="180" width="160" height="80" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="handleimbalance" value="Handle Class Imbalance&#xa;&#xa;SMOTE or Oversample&#xa;Based on ratio" style="rectangle;fillColor=#FFFFFF;strokeColor=#C62828;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="trainingGroup">
+          <mxGeometry x="460" y="50" width="200" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="hyperparamsearch" value="Hyperparameter Search&#xa;&#xa;RandomizedSearchCV&#xa;5 iter, 3-fold CV" style="rectangle;fillColor=#FFFFFF;strokeColor=#C62828;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="trainingGroup">
+          <mxGeometry x="690" y="50" width="200" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="trainmodel" value="Train Random Forest&#xa;&#xa;Best parameters&#xa;Fit on train set" style="rectangle;fillColor=#FFFFFF;strokeColor=#C62828;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="trainingGroup">
+          <mxGeometry x="920" y="50" width="200" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="evaluate" value="Evaluate Model&#xa;&#xa;Accuracy, Precision&#xa;Recall, F1 score" style="rectangle;fillColor=#FFFFFF;strokeColor=#C62828;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="trainingGroup">
+          <mxGeometry x="40" y="180" width="200" height="90" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="savemodel" value="Save Model&#xa;&#xa;Pickle format&#xa;To models/ folder" style="rectangle;fillColor=#FFFFFF;strokeColor=#C62828;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="trainingGroup">
+          <mxGeometry x="40" y="290" width="200" height="70" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="moretypes" value="More Types?&#xa;Continue loop" style="rhombus;fillColor=#FFF9C4;strokeColor=#F57F17;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="trainingGroup">
+          <mxGeometry x="920" y="180" width="160" height="100" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="savesummary" value="Save Training Summary&#xa;&#xa;training_summary.csv&#xa;All model metrics" style="rectangle;fillColor=#FFFFFF;strokeColor=#C62828;strokeWidth=2;fontSize=12;whiteSpace=wrap;" vertex="1" parent="trainingGroup">
+          <mxGeometry x="920" y="290" width="200" height="70" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="endtrain" value="Pipeline Complete" style="ellipse;fillColor=#FFFFFF;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="3925" y="360" width="120" height="60" as="geometry"/>
+        </mxCell>
+        
+        <!-- Connections -->
+        <mxCell id="edge1" edge="1" parent="1" source="start" target="scraping">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge2" edge="1" parent="1" source="scraping" target="weather">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge3" edge="1" parent="1" source="scraping" target="air">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge4" edge="1" parent="1" source="weather" target="loadraw">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge5" edge="1" parent="1" source="air" target="loadraw">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge6" edge="1" parent="1" source="scraping" target="loadraw">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge7" edge="1" parent="1" source="loadraw" target="traffy">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge8" edge="1" parent="1" source="loadraw" target="weatherraw">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge9" edge="1" parent="1" source="loadraw" target="airraw">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge10" edge="1" parent="1" source="traffy" target="cleantraffy">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge11" edge="1" parent="1" source="weatherraw" target="aggweather">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge12" edge="1" parent="1" source="airraw" target="cleanair">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge13" edge="1" parent="1" source="cleantraffy" target="extractdate">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge14" edge="1" parent="1" source="aggweather" target="merge1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge15" edge="1" parent="1" source="extractdate" target="merge1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge16" edge="1" parent="1" source="merge1" target="merge2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge17" edge="1" parent="1" source="cleanair" target="merge2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge18" edge="1" parent="1" source="merge2" target="parsetypes">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge19" edge="1" parent="1" source="parsetypes" target="filterempty">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge20" edge="1" parent="1" source="filterempty" target="dropnulls">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge21" edge="1" parent="1" source="dropnulls" target="extracttime">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge22" edge="1" parent="1" source="extracttime" target="cyclical">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge23" edge="1" parent="1" source="cyclical" target="location">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge24" edge="1" parent="1" source="location" target="createtargets">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge25" edge="1" parent="1" source="createtargets" target="savefinal">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge26" edge="1" parent="1" source="savefinal" target="traindecision">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge27" edge="1" parent="1" source="traindecision" target="end" value="No">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge28" edge="1" parent="1" source="traindecision" target="trainloop" value="Yes">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge29" edge="1" parent="1" source="trainloop" target="checksamples">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge30" edge="1" parent="1" source="checksamples" target="skiptype" value="No">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge31" edge="1" parent="1" source="checksamples" target="handleimbalance" value="Yes">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge32" edge="1" parent="1" source="handleimbalance" target="hyperparamsearch">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge33" edge="1" parent="1" source="hyperparamsearch" target="trainmodel">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge34" edge="1" parent="1" source="trainmodel" target="evaluate">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge35" edge="1" parent="1" source="evaluate" target="savemodel">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge36" edge="1" parent="1" source="savemodel" target="moretypes">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge37" edge="1" parent="1" source="skiptype" target="moretypes">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge38" edge="1" parent="1" source="moretypes" target="trainloop" value="Yes">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge39" edge="1" parent="1" source="moretypes" target="savesummary" value="No">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge40" edge="1" parent="1" source="savesummary" target="endtrain">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

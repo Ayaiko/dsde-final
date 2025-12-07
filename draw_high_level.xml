@@ -1,0 +1,147 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Bangkok Traffy ML Pipeline - High Level" id="high-level">
+    <mxGraphModel dx="1434" dy="790" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        
+        <!-- Title -->
+        <mxCell id="title" value="Bangkok Traffy ML Pipeline - High Level Overview" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=20;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="200" y="20" width="800" height="40" as="geometry"/>
+        </mxCell>
+        
+        <!-- Start -->
+        <mxCell id="start" value="START" style="ellipse;fillColor=#E3F2FD;strokeColor=#1976D2;strokeWidth=3;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="90" y="120" width="140" height="80" as="geometry"/>
+        </mxCell>
+        
+        <!-- Phase 1: Data Collection -->
+        <mxCell id="phase1" value="DATA COLLECTION&#xa;&#xa;• Scrape weather data (Open-Meteo)&#xa;• Scrape air quality (PM2.5, PM10, O3, NO2)&#xa;• Load complaint data (~700K records)" style="rounded=1;whiteSpace=wrap;fillColor=#FFE5B4;strokeColor=#FF8C00;strokeWidth=3;fontSize=13;align=left;spacingLeft=15;fontStyle=0" vertex="1" parent="1">
+          <mxGeometry x="300" y="100" width="280" height="120" as="geometry"/>
+        </mxCell>
+        
+        <!-- Phase 2: Data Processing -->
+        <mxCell id="phase2" value="DATA PROCESSING&#xa;&#xa;• Clean &amp; standardize data&#xa;• Aggregate hourly → daily&#xa;• Merge by date (left join)&#xa;• Parse complaint types" style="rounded=1;whiteSpace=wrap;fillColor=#E0F2F7;strokeColor=#0288D1;strokeWidth=3;fontSize=13;align=left;spacingLeft=15;fontStyle=0" vertex="1" parent="1">
+          <mxGeometry x="640" y="100" width="280" height="120" as="geometry"/>
+        </mxCell>
+        
+        <!-- Phase 3: Feature Engineering -->
+        <mxCell id="phase3" value="FEATURE ENGINEERING&#xa;&#xa;• Extract temporal features (hour, day, month)&#xa;• Cyclical encoding (sin/cos)&#xa;• Location features (lat/lon, district)&#xa;• Create binary targets (multi-label)" style="rounded=1;whiteSpace=wrap;fillColor=#C8E6C9;strokeColor=#388E3C;strokeWidth=3;fontSize=13;align=left;spacingLeft=15;fontStyle=0" vertex="1" parent="1">
+          <mxGeometry x="980" y="100" width="320" height="120" as="geometry"/>
+        </mxCell>
+        
+        <!-- Phase 4: Model Training -->
+        <mxCell id="phase4" value="MODEL TRAINING&#xa;&#xa;• Random Forest per complaint type&#xa;• Handle class imbalance (SMOTE)&#xa;• Hyperparameter tuning (RandomizedSearchCV)&#xa;• Evaluate metrics (Accuracy, F1, Precision, Recall)" style="rounded=1;whiteSpace=wrap;fillColor=#FFCDD2;strokeColor=#C62828;strokeWidth=3;fontSize=13;align=left;spacingLeft=15;fontStyle=0" vertex="1" parent="1">
+          <mxGeometry x="470" y="300" width="360" height="120" as="geometry"/>
+        </mxCell>
+        
+        <!-- Output: Trained Models -->
+        <mxCell id="output1" value="TRAINED MODELS&#xa;&#xa;Saved to models/" style="shape=cylinder3;whiteSpace=wrap;boundedLbl=1;fillColor=#E8EAF6;strokeColor=#5E35B1;strokeWidth=2;fontSize=12;fontStyle=1;size=15" vertex="1" parent="1">
+          <mxGeometry x="950" y="310" width="140" height="100" as="geometry"/>
+        </mxCell>
+        
+        <!-- Output: Final Dataset -->
+        <mxCell id="output2" value="FINAL DATASET&#xa;&#xa;traffy_weather_final.csv" style="shape=document;whiteSpace=wrap;fillColor=#FFF9C4;strokeColor=#F57F17;strokeWidth=2;fontSize=12;fontStyle=1;size=0.2" vertex="1" parent="1">
+          <mxGeometry x="1140" y="310" width="160" height="100" as="geometry"/>
+        </mxCell>
+        
+        <!-- End -->
+        <mxCell id="end" value="COMPLETE" style="ellipse;fillColor=#C8E6C9;strokeColor=#388E3C;strokeWidth=3;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="580" y="500" width="140" height="80" as="geometry"/>
+        </mxCell>
+        
+        <!-- Data Stats Box -->
+        <mxCell id="stats" value="KEY STATISTICS&#xa;&#xa;Records: ~700,000 complaints&#xa;Features: Temporal + Weather + Air Quality&#xa;Target: 20+ complaint types (multi-label)&#xa;Model: Random Forest Classifier&#xa;Validation: 3-fold Cross Validation" style="rounded=0;whiteSpace=wrap;fillColor=#F5F5F5;strokeColor=#757575;strokeWidth=2;fontSize=11;align=left;spacingLeft=10;fontStyle=0" vertex="1" parent="1">
+          <mxGeometry x="100" y="300" width="300" height="140" as="geometry"/>
+        </mxCell>
+        
+        <!-- Decision Node -->
+        <mxCell id="traindecision" value="Train Models?" style="rhombus;fillColor=#FFF9C4;strokeColor=#F57F17;strokeWidth=2;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="1090" y="460" width="140" height="100" as="geometry"/>
+        </mxCell>
+        
+        <!-- Connections -->
+        <mxCell id="edge1" edge="1" parent="1" source="start" target="phase1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"/>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="edge2" edge="1" parent="1" source="phase1" target="phase2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"/>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="edge3" edge="1" parent="1" source="phase2" target="phase3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"/>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="edge4" edge="1" parent="1" source="phase3" target="phase4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1140" y="250"/>
+              <mxPoint x="650" y="250"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="edge5" edge="1" parent="1" source="phase3" target="output2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1220" y="250"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="edge6" edge="1" parent="1" source="phase4" target="output1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"/>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="edge7" edge="1" parent="1" source="phase4" target="end">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"/>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="edge8" edge="1" parent="1" source="phase3" target="traindecision">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1160" y="250"/>
+              <mxPoint x="1160" y="510"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="edge9" value="YES" edge="1" parent="1" source="traindecision" target="phase4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1000" y="510"/>
+              <mxPoint x="650" y="450"/>
+            </Array>
+            <mxPoint as="offset" x="-10" y="-10"/>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="edge10" value="NO" edge="1" parent="1" source="traindecision" target="end">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1000" y="540"/>
+            </Array>
+            <mxPoint as="offset" x="10" y="10"/>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Technology Stack Box -->
+        <mxCell id="techstack" value="TECHNOLOGY STACK&#xa;&#xa;Python | pandas | scikit-learn&#xa;Random Forest | SMOTE&#xa;Streamlit | Plotly | Pydeck" style="rounded=0;whiteSpace=wrap;fillColor=#E8EAF6;strokeColor=#5E35B1;strokeWidth=2;fontSize=11;align=center;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="100" y="470" width="300" height="110" as="geometry"/>
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

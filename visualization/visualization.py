@@ -10,6 +10,8 @@ from sklearn.neighbors import KernelDensity
 import random
 import os
 
+#pdk.settings.mapbox.api_key = 'pk.eyJ1Ijoic2luc3VkYSIsImEiOiJjbWlxM3FqczAwN3cwM2RwcTJxdXhnZGFqIn0.r6RlogmGVSBLUr6Ea1AD-Q'
+
 MAP_STYLES = {
     'Dark': 'mapbox://styles/mapbox/dark-v10',
     'Light': 'mapbox://styles/mapbox/light-v10',
@@ -57,18 +59,28 @@ def load_data():
     data = data.dropna(subset=["date"])
     data[[ 'longitude','latitude']] = data['coords'].str.split(',', expand=True).astype(float)
     data = data.dropna(subset=['latitude', 'longitude'])
-    data = data.loc[data["type_list"] != "[]"]
-    data = data.drop(columns=["type_list","timestamp", " o3", " no2",
-                              "dew_point_2m (°C)","vapour_pressure_deficit (kPa)",
-                              "cloud_cover (%)","wind_direction_10m (°)","surface_pressure (hPa)",
-                              "wind_speed_10m (km/h)","province","rain (mm)","coords"])
+    
+    # Create type_list first before filtering
     data["type"] = data["type"].str.replace(r"[{}]", "", regex=True)
-
-    data = data.rename(columns={" pm25": "pm25"})
-
-    data['pm25'] = pd.to_numeric(data['pm25'], errors='coerce')
-
     data['type_list'] = data['type'].str.split(',').apply(lambda x: [t.strip() for t in x])
+    
+    # Now filter out empty type_list
+    data = data.loc[data['type_list'].apply(lambda x: len(x) > 0 and x != [''])]
+    
+    # Drop unnecessary columns
+    columns_to_drop = ["timestamp", " o3", " no2",
+                      "dew_point_2m (°C)","vapour_pressure_deficit (kPa)",
+                      "cloud_cover (%)","wind_direction_10m (°)","surface_pressure (hPa)",
+                      "wind_speed_10m (km/h)","province","rain (mm)","coords"]
+    # Only drop columns that exist
+    columns_to_drop = [col for col in columns_to_drop if col in data.columns]
+    data = data.drop(columns=columns_to_drop)
+    
+    # Rename pm25 column if it exists with leading space
+    if " pm25" in data.columns:
+        data = data.rename(columns={" pm25": "pm25"})
+    
+    data['pm25'] = pd.to_numeric(data['pm25'], errors='coerce')
 
 
     return data
@@ -338,43 +350,117 @@ if page == "🎯 Model Feature Importance":
                         'importance': importances
                     }).sort_values('importance', ascending=False)
                     
+                    # Filter options
+                    st.subheader("Feature Importance Options")
+                    col1, col2 = st.columns(2)
+                    
+                    with col1:
+                        show_cyclical = st.checkbox("Show cyclical encodings (sin/cos)", value=False)
+                    with col2:
+                        show_districts = st.checkbox("Show district features", value=True)
+                    
+                    # Filter out cyclical encodings if not selected
+                    filtered_importance = importance_df.copy()
+                    if not show_cyclical:
+                        filtered_importance = filtered_importance[
+                            ~filtered_importance['feature'].str.contains('_sin|_cos', regex=True)
+                        ]
+                    
+                    # Filter out district features if not selected
+                    if not show_districts:
+                        filtered_importance = filtered_importance[
+                            ~filtered_importance['feature'].str.contains('district_', regex=False)
+                        ]
+                    
+                    # Categorize features
+                    def categorize_feature(feature):
+                        feature_lower = feature.lower()
+                        if any(x in feature_lower for x in ['hour', 'day', 'month', 'weekend']):
+                            return 'Temporal'
+                        elif any(x in feature_lower for x in ['pm', 'o3', 'no2', 'aqi']):
+                            return 'Air Quality'
+                        elif any(x in feature_lower for x in ['temp', 'rain', 'wind', 'humidity', 'pressure', 'cloud', 'precipitation']):
+                            return 'Weather'
+                        elif any(x in feature_lower for x in ['lat', 'long', 'district']):
+                            return 'Location'
+                        else:
+                            return 'Other'
+                    
+                    filtered_importance['category'] = filtered_importance['feature'].apply(categorize_feature)
+                    
                     # Display top features
-                    st.subheader(f"Top 20 Features for {selected_model}")
+                    st.subheader(f"Top Interpretable Features for {selected_model}")
                     
                     top_n = st.slider("Number of top features to display", 5, 50, 20)
                     
-                    top_features = importance_df.head(top_n)
+                    top_features = filtered_importance.head(top_n)
                     
-                    # Bar chart
+                    # Bar chart with color by category
                     fig = px.bar(
                         top_features,
                         x='importance',
                         y='feature',
                         orientation='h',
-                        title=f'Top {top_n} Features - {selected_model}',
+                        title=f'Top {top_n} Interpretable Features - {selected_model}',
                         labels={'importance': 'Importance Score', 'feature': 'Feature Name'},
-                        color='importance',
-                        color_continuous_scale='Viridis'
+                        color='category',
+                        color_discrete_map={
+                            'Temporal': '#FF6B6B',
+                            'Air Quality': '#4ECDC4',
+                            'Weather': '#45B7D1',
+                            'Location': '#FFA07A',
+                            'Other': '#95E1D3'
+                        }
                     )
                     fig.update_layout(height=max(400, top_n * 20), yaxis={'categoryorder': 'total ascending'})
                     st.plotly_chart(fig, use_container_width=True)
                     
+                    # Category importance summary
+                    st.subheader("Feature Importance by Category")
+                    category_importance = filtered_importance.groupby('category')['importance'].sum().sort_values(ascending=False)
+                    
+                    col1, col2 = st.columns([2, 1])
+                    with col1:
+                        fig_cat = px.bar(
+                            x=category_importance.values,
+                            y=category_importance.index,
+                            orientation='h',
+                            title='Total Importance by Category',
+                            labels={'x': 'Total Importance', 'y': 'Category'},
+                            color=category_importance.index,
+                            color_discrete_map={
+                                'Temporal': '#FF6B6B',
+                                'Air Quality': '#4ECDC4',
+                                'Weather': '#45B7D1',
+                                'Location': '#FFA07A',
+                                'Other': '#95E1D3'
+                            }
+                        )
+                        st.plotly_chart(fig_cat, use_container_width=True)
+                    
+                    with col2:
+                        st.metric("Total Categories", len(category_importance))
+                        for cat, imp in category_importance.items():
+                            st.metric(cat, f"{imp:.4f}")
+                    
                     # Show dataframe
                     st.subheader("Feature Importance Table")
                     st.dataframe(
-                        importance_df.head(top_n).style.background_gradient(
+                        filtered_importance.head(top_n).style.background_gradient(
                             cmap='Greens', subset=['importance']
                         ),
                         use_container_width=True
                     )
                     
                     # Model info
-                    col1, col2, col3 = st.columns(3)
+                    col1, col2, col3, col4 = st.columns(4)
                     with col1:
                         st.metric("Total Features", len(feature_names))
                     with col2:
-                        st.metric("Model Type", type(model).__name__)
+                        st.metric("Interpretable Features", len(filtered_importance))
                     with col3:
+                        st.metric("Model Type", type(model).__name__)
+                    with col4:
                         if hasattr(model, 'n_estimators'):
                             st.metric("N Estimators", model.n_estimators)
                     
@@ -393,4 +479,3 @@ if page == "🎯 Model Feature Importance":
                     
             except Exception as e:
                 st.error(f"Error loading model: {e}")
-

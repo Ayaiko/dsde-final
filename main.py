@@ -1,4 +1,4 @@
-from pipeline.extract import load_traffy_data, load_all_weather_data, load_single_location_weather
+from pipeline.extract import load_traffy_data, load_all_weather_data, load_single_location_weather, load_bangkok_air_quality
 from pipeline.transform import parse_timestamps, assign_grid_cells, merge_datasets
 from pipeline.utils import split_coordinates, clean_traffy_data
 from pipeline.load import save_merged_data
@@ -81,8 +81,21 @@ def main(skip_etl=False, skip_training=False, skip_scraping=True, sample_size=No
         # Aggregate weather to daily average
         df_weather_daily = df_weather.groupby('date').mean(numeric_only=True).reset_index()
         
-        # Merge on date only (100% match rate)
+        # Load air quality data
+        try:
+            df_air = load_bangkok_air_quality('data/processed/bangkok-air-quality.csv')
+            print(f"✓ Loaded {len(df_air):,} air quality records")
+        except FileNotFoundError:
+            print("⚠️  Bangkok air quality file not found, continuing without air quality data")
+            df_air = None
+        
+        # Merge weather on date only (100% match rate)
         df_merged = df_traffy.merge(df_weather_daily, on='date', how='left')
+        
+        # Merge air quality data if available
+        if df_air is not None:
+            df_merged = df_merged.merge(df_air, on='date', how='left')
+            print(f"✓ Merged with air quality data")
         
         save_merged_data(df_merged)
     
