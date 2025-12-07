@@ -83,7 +83,7 @@ def main(skip_etl=False, skip_training=False, skip_scraping=True, sample_size=No
         
         # Load air quality data
         try:
-            df_air = load_bangkok_air_quality('data/processed/bangkok-air-quality.csv')
+            df_air = load_bangkok_air_quality('data/raw/bangkok-air-quality.csv')
             print(f"✓ Loaded {len(df_air):,} air quality records")
         except FileNotFoundError:
             print("⚠️  Bangkok air quality file not found, continuing without air quality data")
