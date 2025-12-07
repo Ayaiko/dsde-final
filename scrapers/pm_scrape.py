@@ -4,7 +4,7 @@ import time
 
 def download_aqi_bangkok():
     # ใช้ path ปัจจุบันของสคริปต์
-    download_dir = os.getcwd()
+    download_dir = 'data/raw/'
 
     with sync_playwright() as p:
         # เพิ่ม stealth mode เพื่อหลีกเลี่ยงการตรวจจับบอต
@@ -130,4 +130,4 @@ def download_aqi_bangkok():
         browser.close()
 
 
-#download_aqi_bangkok()
+download_aqi_bangkok()
