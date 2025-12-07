@@ -15,8 +15,8 @@ import sys
 import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__), 'scrapers'))
-from weather_scrape import download_api_weather_bangkok
-from pm_scrape import download_aqi_bangkok
+from scrapers.weather_scrape import download_api_weather_bangkok
+from scrapers.pm_scrape import download_aqi_bangkok
 
 
 def main(skip_etl=False, skip_training=False, skip_scraping=True, sample_size=None, train_n_iter=5, train_min_samples=50):

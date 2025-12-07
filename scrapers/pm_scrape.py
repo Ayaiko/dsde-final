@@ -110,13 +110,14 @@ def download_aqi_bangkok():
         except:
             print("No 'I agree' button found, continuing...")
 
-        with page.expect_download() as download_info:
+        with page.expect_download(timeout=60000) as download_info:
             # If there's another button to click after agreeing
             try:
-                final_button = page.wait_for_selector('button:has-text("Download")', timeout=5000)
+                final_button = page.wait_for_selector('button:has-text("Download")', timeout=10000)
                 time.sleep(0.5)
                 final_button.click()
             except:
+                print("No final download button found, download might start automatically...")
                 pass
         
         download = download_info.value
@@ -130,4 +131,5 @@ def download_aqi_bangkok():
         browser.close()
 
 
-download_aqi_bangkok()
+if __name__ == "__main__":
+    download_aqi_bangkok()
